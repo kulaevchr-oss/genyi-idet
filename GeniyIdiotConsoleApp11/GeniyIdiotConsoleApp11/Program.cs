@@ -1,7 +1,9 @@
 ﻿using System;
 
 class Program
-{
+{static void Main(string[] args)
+    {
+
     static string GetDiagnosis(int score, int count, string[] results)
     {
         int index = score * (results.Length - 1) / count;
