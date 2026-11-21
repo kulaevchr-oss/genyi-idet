@@ -1,9 +1,7 @@
 ﻿using System;
 
 class Program
-{static void Main(string[] args)
-    {
-
+{
     static string GetDiagnosis(int score, int count, string[] results)
     {
         int index = score * (results.Length - 1) / count;
@@ -12,8 +10,48 @@ class Program
 
     static void Main()
     {
-        Console.Write("Как вас зовут? ");
-        string name = Console.ReadLine();
+        Console.InputEncoding = System.Text.Encoding.UTF8;
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+        while (true)
+        {
+            Console.WriteLine();
+            Console.WriteLine("1. Пройти тест");
+            Console.WriteLine("2. Показать все результаты");
+            Console.WriteLine("0. Выход");
+            Console.Write("Ваш выбор: ");
+
+            switch (Console.ReadLine()?.Trim())
+            {
+                case "1":
+                    Play();
+                    break;
+                case "2":
+                    ResultHistory.Show();
+                    break;
+                case "0":
+                case null:
+                    return;
+                default:
+                    Console.WriteLine("Введите 1, 2 или 0.");
+                    break;
+            }
+        }
+    }
+
+    static void Play()
+    {
+        string? name;
+        do
+        {
+            Console.Write("Введите ФИО: ");
+            name = Console.ReadLine()?.Trim().Replace('\t', ' ');
+            if (name == null)
+                return;
+
+            if (name.Length == 0)
+                Console.WriteLine("ФИО не может быть пустым.");
+        } while (name.Length == 0);
 
         string[] questions =
         {
@@ -37,7 +75,7 @@ class Program
         };
 
         Random random = new Random();
-        string repeat;
+        string? repeat;
 
         do
         {
@@ -68,10 +106,15 @@ class Program
 
                 Console.Write("Ваш ответ: ");
 
-                while (!int.TryParse(Console.ReadLine(), out userAnswers[i]))
+                string? answer = Console.ReadLine();
+                while (!int.TryParse(answer, out userAnswers[i]))
                 {
+                    if (answer == null)
+                        return;
+
                     Console.WriteLine("Пожалуйста, введите число!");
                     Console.Write("Ваш ответ: ");
+                    answer = Console.ReadLine();
                 }
             }
 
@@ -102,12 +145,13 @@ class Program
             string diagnosis = GetDiagnosis(score, questions.Length, results);
 
             Console.WriteLine(name + ", ваш результат: " + diagnosis);
+            ResultHistory.Save(name, score, diagnosis);
 
             Console.WriteLine();
             Console.Write("Хотите пройти тест снова? (да/нет): ");
-            repeat = Console.ReadLine().Trim().ToLower();
+            repeat = Console.ReadLine()?.Trim();
 
-        } while (repeat == "да");
+        } while (string.Equals(repeat, "да", StringComparison.OrdinalIgnoreCase));
 
         Console.WriteLine("До свидания, " + name + "!");
     }
